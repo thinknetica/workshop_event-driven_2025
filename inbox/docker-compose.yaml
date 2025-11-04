@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+  rabbitmq:
+    image: rabbitmq:4.2-management-alpine
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+  inbox:
+    tty: true
+    stdin_open: true
+    image: inbox
+    container_name: inbox
+    build:
+      context: .
+    env_file:
+      ".env"
+    environment:
+      DB_HOST: 'db'
+      DB_USER: 'postgres'
+      DB_PASSWORD: 'postgres'
+      RABBITMQ_HOSTS_JSON: 'rabbitmq'
+      RABBITMQ_VHOST: '/'
+      RABBITMQ_USER: 'guest'
+      RABBITMQ_PASSWORD: 'guest'
+    depends_on:
+      - db
+      - rabbitmq
+    command: >
+      sh -c "bundle exec bin/jobs"
+    volumes:
+      - .:/rails

@@ -1,0 +1,10 @@
+---
+services:
+  tesseract:
+    image: philiplehmann/tesseract
+    container_name: tesseract
+    restart: always
+    networks:
+      - default
+    ports:
+      - "3000:3000"

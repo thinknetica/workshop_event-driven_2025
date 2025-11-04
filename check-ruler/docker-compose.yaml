@@ -1,0 +1,61 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+  rabbitmq:
+    image: rabbitmq:4.2-management-alpine
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+  check-ruler:
+    tty: true
+    stdin_open: true
+    image: check-ruler
+    container_name: check-ruler
+    build:
+      context: .
+    ports:
+      - "8002:3000"
+    env_file:
+      .env
+    environment:
+      DB_HOST: 'db'
+      DB_USER: 'postgres'
+      DB_PASSWORD: 'postgres'
+      RABBITMQ_HOSTS: 'rabbitmq'
+      RABBITMQ_VHOST: '/'
+      RABBITMQ_USER: 'guest'
+      RABBITMQ_PASSWORD: 'guest'
+    depends_on:
+      - db
+      - rabbitmq
+    command: >
+      sh -c "rm -f tmp/pids/server.pid &&
+             bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - .:/rails
+  check-ruler-sneakers:
+    tty: true
+    stdin_open: true
+    image: check-ruler-sneakers
+    container_name: check-ruler-sneakers
+    build:
+      context: .
+    env_file:
+      .env
+    environment:
+      DB_HOST: 'db'
+      DB_USER: 'postgres'
+      DB_PASSWORD: 'postgres'
+      RABBITMQ_HOSTS: 'rabbitmq'
+      RABBITMQ_VHOST: '/'
+      RABBITMQ_USER: 'guest'
+      RABBITMQ_PASSWORD: 'guest'
+    depends_on:
+      - db
+      - rabbitmq
+    command: sh -c "sleep 10 && bundle exec rails sneakers:run"
+    volumes:
+      - .:/rails

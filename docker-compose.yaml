@@ -1,0 +1,227 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+  rabbitmq:
+    image: rabbitmq:4.2-management-alpine
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+  inbox:
+    tty: true
+    stdin_open: true
+    image: inbox
+    container_name: inbox
+    build:
+      context: ./inbox
+    env_file:
+      ./inbox/.env
+    environment:
+      DB_HOST: 'db'
+      DB_USER: 'postgres'
+      DB_PASSWORD: 'postgres'
+      RABBITMQ_HOSTS_JSON: 'rabbitmq'
+    depends_on:
+      - db
+      - rabbitmq
+    command: >
+      sh -c "bundle exec bin/jobs"
+    volumes:
+      - ./inbox:/rails
+  check-manager:
+    tty: true
+    stdin_open: true
+    image: check-manager
+    container_name: check-manager
+    build:
+      context: ./check-manager
+    ports:
+      - '8001:3000'
+    env_file:
+      ./check-manager/.env
+    environment:
+      DB_HOST: 'db'
+      DB_USER: 'postgres'
+      DB_PASSWORD: 'postgres'
+      RABBITMQ_HOSTS: 'rabbitmq'
+    depends_on:
+      - db
+      - rabbitmq
+    command: >
+      sh -c "rm -f tmp/pids/server.pid &&
+             bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - ./check-manager:/rails
+  check-manager-sneakers:
+    tty: true
+    stdin_open: true
+    image: check-manager-sneakers
+    container_name: check-manager-sneakers
+    build:
+      context: ./check-manager
+    env_file:
+      ./check-manager/.env
+    environment:
+      DB_HOST: 'db'
+      DB_USER: 'postgres'
+      DB_PASSWORD: 'postgres'
+      RABBITMQ_HOSTS: 'rabbitmq'
+    depends_on:
+      - db
+      - rabbitmq
+    command: sh -c "sleep 10 && bundle exec rails sneakers:run"
+    volumes:
+      - ./check-manager:/rails
+  tesseract-sneakers:
+    tty: true
+    stdin_open: true
+    image: tesseract-sneakers
+    container_name: tesseract-sneakers
+    build:
+      context: ./tesseract
+    env_file:
+      ./tesseract/.env
+    environment:
+      RABBITMQ_HOSTS: 'rabbitmq'
+    depends_on:
+      - rabbitmq
+    command: sh -c "sleep 10 && bundle exec rails sneakers:run"
+    volumes:
+      - ./tesseract:/rails
+  check-ruler:
+    tty: true
+    stdin_open: true
+    image: check-ruler
+    container_name: check-ruler
+    build:
+      context: ./check-ruler
+    ports:
+      - "8002:3000"
+    env_file:
+      ./check-ruler/.env
+    environment:
+      DB_HOST: 'db'
+      DB_USER: 'postgres'
+      DB_PASSWORD: 'postgres'
+      RABBITMQ_HOSTS: 'rabbitmq'
+    depends_on:
+      - db
+      - rabbitmq
+    command: >
+      sh -c "rm -f tmp/pids/server.pid &&
+             bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - ./check-ruler:/rails
+  check-ruler-sneakers:
+    tty: true
+    stdin_open: true
+    image: check-ruler-sneakers
+    container_name: check-ruler-sneakers
+    build:
+      context: ./check-ruler
+    env_file:
+      ./check-ruler/.env
+    environment:
+      DB_HOST: 'db'
+      DB_USER: 'postgres'
+      DB_PASSWORD: 'postgres'
+      RABBITMQ_HOSTS: 'rabbitmq'
+    depends_on:
+      - db
+      - rabbitmq
+    command: sh -c "sleep 10 && bundle exec rails sneakers:run"
+    volumes:
+      - ./check-ruler:/rails
+  check-register:
+    tty: true
+    stdin_open: true
+    image: check-register
+    container_name: check-register
+    build:
+      context: ./check-register
+    ports:
+      - "8003:3000"
+    env_file:
+      ./check-register/.env
+    environment:
+      DB_HOST: 'db'
+      DB_USER: 'postgres'
+      DB_PASSWORD: 'postgres'
+      RABBITMQ_HOSTS: 'rabbitmq'
+    depends_on:
+      - db
+      - rabbitmq
+    command: >
+      sh -c "rm -f tmp/pids/server.pid &&
+             bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - ./check-register:/rails
+  check-register-sneakers:
+    tty: true
+    stdin_open: true
+    image: check-register-sneakers
+    container_name: check-register-sneakers
+    build:
+      context: ./check-register
+    env_file:
+      ./check-register/.env
+    environment:
+      DB_HOST: 'db'
+      DB_USER: 'postgres'
+      DB_PASSWORD: 'postgres'
+      RABBITMQ_HOSTS: 'rabbitmq'
+      RABBITMQ_VHOST: '/'
+      RABBITMQ_USER: 'guest'
+      RABBITMQ_PASSWORD: 'guest'
+    depends_on:
+      - db
+      - rabbitmq
+    command: sh -c "sleep 10 && bundle exec rails sneakers:run"
+    volumes:
+      - ./check-register:/rails
+  budget-control:
+    tty: true
+    stdin_open: true
+    image: budget-control
+    container_name: budget-control
+    build:
+      context: ./budget-control
+    ports:
+      - "8004:3000"
+    env_file:
+      ./budget-control/.env
+    environment:
+      DB_HOST: 'db'
+      DB_USER: 'postgres'
+      DB_PASSWORD: 'postgres'
+      RABBITMQ_HOSTS: 'rabbitmq'
+    depends_on:
+      - db
+      - rabbitmq
+    command: >
+      sh -c "rm -f tmp/pids/server.pid &&
+             bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - ./budget-control:/rails
+  budget-control-sneakers:
+    tty: true
+    stdin_open: true
+    image: budget-control-sneakers
+    container_name: budget-control-sneakers
+    build:
+      context: ./budget-control
+    env_file:
+      ./budget-control/.env
+    environment:
+      DB_HOST: 'db'
+      DB_USER: 'postgres'
+      DB_PASSWORD: 'postgres'
+      RABBITMQ_HOSTS: 'rabbitmq'
+    depends_on:
+      - db
+      - rabbitmq
+    command: sh -c "sleep 10 && bundle exec rails sneakers:run"
+    volumes:
+      - ./budget-control:/rails

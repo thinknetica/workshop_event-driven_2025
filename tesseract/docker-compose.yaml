@@ -1,0 +1,25 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4.2-management-alpine
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+  tesseract-sneakers:
+    tty: true
+    stdin_open: true
+    image: tesseract-sneakers
+    container_name: tesseract-sneakers
+    build:
+      context: .
+    env_file:
+      .env
+    environment:
+      RABBITMQ_HOSTS: 'rabbitmq'
+      RABBITMQ_VHOST: '/'
+      RABBITMQ_USER: 'guest'
+      RABBITMQ_PASSWORD: 'guest'
+    depends_on:
+      - rabbitmq
+    command: sh -c "sleep 10 && bundle exec rails sneakers:run"
+    volumes:
+      - .:/rails

@@ -1,0 +1,26 @@
+module RabbitMessages
+  class Send < BaseAmqp
+    attr_reader :message, :routing_key
+
+    def initialize(message, routing_key = nil)
+      super()
+      @message = message
+      @routing_key = routing_key
+      @routing_key = message[:routing_key] unless routing_key
+    end
+
+    def call
+      publish_exchange(message)
+    rescue => e
+      Rails.logger.error(e.message)
+      Rails.logger.error(e.backtrace.join("\n"))
+    end
+
+    private
+
+    def publish_exchange(payload)
+      exchange = find_exchange(EXCHANGE)
+      exchange.publish(payload.to_json, routing_key: routing_key)
+    end
+  end
+end

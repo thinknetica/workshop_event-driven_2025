@@ -1,0 +1,57 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+gem 'bootsnap', require: false
+gem 'good_migrations'
+gem 'pg', '~> 1.1'
+gem 'puma', '>= 5.0'
+gem 'rails', '~> 8.0.3'
+gem 'tzinfo-data', platforms: %i[windows jruby]
+
+# Конфигурирование приложения
+gem 'config'
+gem 'dotenv', require: 'dotenv/load'
+
+# Работа с почтой
+gem 'mail'
+
+# Работа с переодическими фоновыми задачами
+gem 'solid_queue'
+
+# Загрузка файлов
+gem 'carrierwave'
+# Используем пропатченную версию до исправления следующего issue
+# https://github.com/carrierwaveuploader/carrierwave-aws/issues/190
+gem 'carrierwave-aws', git: 'https://github.com/igorsimdyanov/carrierwave-aws.git'
+gem 'carrierwave-i18n'
+
+# Сериализация
+gem 'alba'
+
+# Отправка сообщений в RabbitMQ
+gem 'bunny'
+
+# Управление бизнес-логикой
+gem 'dry-initializer'
+
+group :development, :test do
+  gem 'debug', platforms: %i[mri windows], require: 'debug/prelude'
+  gem 'factory_bot_rails'
+  gem 'pry-byebug'
+  gem 'pry-rails'
+  gem 'rspec-rails'
+end
+
+group :development do
+  gem 'bundler-audit', require: false
+  gem 'pgcli-rails'
+  gem 'rubocop', require: false
+  gem 'rubocop-factory_bot', require: false
+  gem 'rubocop-performance', require: false
+  gem 'rubocop-rails', require: false
+end
+
+group :test do
+  gem 'shoulda-matchers'
+end

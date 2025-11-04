@@ -1,0 +1,42 @@
+class SneakersListener
+  include Sneakers::Worker
+
+  ACTION_HANDLERS = {
+    recognize: Checks::RecognizeService,
+  }.freeze
+  QUEUE_NAME = Settings.sneakers.queue
+
+  from_queue Settings.sneakers.queue
+
+  attr_reader :parsed_message
+
+  def work(message)
+    parse_message(message)
+    process_message
+    ack!
+  rescue StandardError => e
+    Rails.logger.error(e.message)
+    Rails.logger.error(e.backtrace.join("\n"))
+    reject!
+  end
+
+  private
+
+  def parse_message(message)
+    @parsed_message = JSON.parse(message, symbolize_names: true)
+    logger.info("Listener worker - message: #{parsed_message}")
+  end
+
+  def process_message
+    handler = ACTION_HANDLERS[action&.to_sym]
+    raise StandardError, "Action #{action} is not supported" unless handler
+
+    handler.call(parsed_message)
+  end
+
+  def action
+    parsed_message[:action]
+  end
+end
+
+RabbitBindQueues.create_for(SneakersListener)

@@ -1,0 +1,15 @@
+imap:
+  email: <%= ENV['INBOX_IMAP_EMAIL'] %>
+  password: <%= ENV['INBOX_IMAP_PASSWORD'] %>
+  port: <%= ENV['INBOX_IMAP_PORT'] %>
+  server: <%= ENV['INBOX_IMAP_SERVER'] %>
+rabbitmq:
+  hosts: <%= ENV.fetch('RABBITMQ_HOSTS_JSON', ['localhost']) %>
+  vhost: <%= ENV.fetch('RABBITMQ_VHOST', '/') %>
+  user: <%= ENV.fetch('RABBITMQ_USER', 'guest') %>
+  password: <%= ENV.fetch('RABBITMQ_PASSWORD', 'guest') %>
+  heartbeat_interval: 20
+  exchange: 'services'
+  exchange_type: 'topic'
+  routing_key: 'attachment_registered'
+  outbox_queue: 'inbox.out'
