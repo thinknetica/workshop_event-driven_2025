@@ -33,7 +33,7 @@ class ::RailsTemplate < Thor::Group
   def configure_configs
     copy_file '.rubocop.yml', force: true
     copy_file '.rspec'
-    copy_file '.env.sample'
+    copy_file 'sample.env'
     copy_file 'config/initializers/config.rb'
     copy_file 'config/initializers/active_admin.rb'
     copy_file 'config/initializers/sneakers.rb'
