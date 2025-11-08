@@ -34,14 +34,6 @@ RABBITMQ_VHOST - изолированный vhost-контур RabbitMQ
 RABBITMQ_USER - пользователь RabbitMQ
 RABBITMQ_PASSWORD - пароль пользователя RabbitMQ
 
-## Извлечение почтового уведомления
-
-Для извлечения почтового уведомления и помещения его содержимого в очередь RabbitMQ выполняется следующая команда:
-
-```
-bundle exec rails mail:fetch
-```
-
 ## Периодическое фоновое извлечение почтовых уведомлений
 
 Автоматизировать извлечение почтового уведомления проще всего при помощи рекуррентных задач solid_queue, о которых детальнее можно почитать по [ссылке](https://github.com/rails/solid_queue#recurring-tasks).
@@ -138,11 +130,14 @@ yc iam access-key create --service-account-name igorsimdyanov
 ### Обработка изображений
 
 Подключаем в Gemfile [carrierwave](https://github.com/carrierwaveuploader/carrierwave)
+Его пришлось пропатчить из-за ошибки [carrierwave](https://github.com/igorsimdyanov/carrierwave-aws)
 
 ```ruby
-# Uploads
+# Загрузка файлов
 gem 'carrierwave'
-gem 'carrierwave-aws'
+# Используем пропатченную версию до исправления следующего issue
+# https://github.com/carrierwaveuploader/carrierwave-aws/issues/190
+gem 'carrierwave-aws', git: 'https://github.com/igorsimdyanov/carrierwave-aws.git'
 gem 'carrierwave-i18n'
 ```
 
