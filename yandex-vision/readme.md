@@ -27,7 +27,3 @@ bundle exec rails sneakers:run
 * S3_ACCESS_KEY_ID - идентификатор для входа в S3
 * S3_SECRET_ACCESS_KEY - пароль для входа в S3
 * S3_REGION - регион S3-хранилища (например, aws:amz:ru-central1:s3)
-
-## TODO
-
-* Docker-изировать проект
