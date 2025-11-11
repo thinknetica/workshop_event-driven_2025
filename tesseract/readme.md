@@ -10,7 +10,7 @@
 
 Приложение имеет лишь одну точку входа: слушает RabbitMQ-сообщения, для этого поднимается sneakers-обработчик 
 
-```sh
+```bash
 bundle exec rails sneakers:run
 ```
 
