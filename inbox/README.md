@@ -6,7 +6,7 @@
 
 Для генерации приложений используем nextgen
 
-```
+```bash
 gem exec nextgen create inbox
 ```
 
@@ -46,19 +46,19 @@ RABBITMQ_PASSWORD - пароль пользователя RabbitMQ
 
 Устанавливаем гем solid_queue
 
-```
+```bash
 gem 'solid_queue'  
 ```
 
 Выполняем первичную установку solid_queue
 
-```
+```bash
 bundle exec rails solid_queue:install
 ```
 
 Так как будем запускать переодические задачи в том числе в development-окружении, вносим изменения в config/environments/development.rb
 
-```
+```ruby
   # Replace the default in-process and non-durable queuing backend for Active Job.
   config.active_job.queue_adapter = :solid_queue
   config.solid_queue.connects_to = { database: { writing: :queue } }
@@ -67,7 +67,7 @@ bundle exec rails solid_queue:install
 
 Кроме того, необходимо добавить в config/database.yml в development-окружение название базы данных под solid_queue (в них развенутся миграции из config/queue_schema.rb)
 
-```
+```yaml
 development:
   primary: &primary_development
     <<: *default
@@ -82,7 +82,7 @@ development:
 
 Для этого воспользуемся job-генератором:
 
-```
+```bash
 bundle exec rails g job extract_email
 ```
 
@@ -106,7 +106,7 @@ end
 
 Добавляем в config/recurring.yml задачу на запуск ExtractEmailJob каждую минуту
 
-```
+```yaml
 development:
   extract_email_every_minute_jobs:
     class: ExtractEmailJob
@@ -115,7 +115,7 @@ development:
 
 ### Запуск переодических задач
 
-```
+```bash
 bin/jobs
 ```
 
@@ -127,7 +127,7 @@ bin/jobs
 
 Создаем сервисный аккаунт
 
-```
+```bash
 yc iam access-key create --service-account-name igorsimdyanov
 ```
 
@@ -179,13 +179,13 @@ end
 
 Генерируем аплоадер:
 
-```ruby
+```bash
 bundle exec rails g uploader Attachment
 ```
 
 Изменяем содержимое аплоадера (app/uploaders/attachment_uploader.rb):
 
-```
+```ruby
 class AttachmentUploader < CarrierWave::Uploader::Base
   storage :aws
 
@@ -201,7 +201,7 @@ end
 
 Создаем модель Attachment
 
-```
+```bash
 bundle exec rails g model attachment file:string:uniq
 bundle exec rails db:migrate
 ```
@@ -218,7 +218,7 @@ end
 
 Создаем модель rake-задачу
 
-```
+```bash
 bundle exec rails g task upload check
 ```
 
@@ -239,7 +239,7 @@ end
 
 Выполняем загрузку чека в S3-хранилище
 
-```
+```bash
 bundle exec rails upload:check
 ```
 
@@ -247,7 +247,7 @@ bundle exec rails upload:check
 
 Для формирования data-сообщения, которое отправляется через Bunny, формируем data-объект. Для этого используем сериалайзер [alba](https://github.com/okuramasafumi/alba). Добавляем гем в Gemfile:
 
-```
+```ruby
 gem 'alba'
 ```
 
@@ -255,7 +255,7 @@ gem 'alba'
 
 Для отправки данных через RabbitMQ используем гем Bunny. Добавляем гем в Gemfile:
 
-```
+```ruby
 gem 'bunny'
 ```
 
