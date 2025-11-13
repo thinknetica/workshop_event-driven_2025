@@ -26,7 +26,7 @@ bundle exec rails sneakers:run
 
 ## Отправка тестового сообщения
 
-```
+```bash
 bundle exec rails fake_message:start
 ```
 
