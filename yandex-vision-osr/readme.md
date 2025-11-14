@@ -19,7 +19,7 @@ curl --request POST \
   --header "Authorization: Bearer ${IAM_TOKEN}" \
   --header "x-data-logging-enabled: true" \
   --header "x-folder-id: b1gdtl2rf29n03bd49nn" \
-  --data "@/Users/igorsimdanov/www/thinknetica/arch-event-driven/yandex-vision-osr/body.json" \
+  --data "@/Users/igorsimdanov/www/thinknetica/event-app/yandex-vision-osr/body.json" \
   https://ocr.api.cloud.yandex.net/ocr/v1/recognizeText --output output.json
 ```
 
