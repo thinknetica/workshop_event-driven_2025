@@ -90,6 +90,6 @@ tesseract eurotext.png output --oem 1 -l eng
 
 ```bash
 tesseract eurotext.png stdout --oem 1 -l eng
-tesseract check001.jpg stdout --oem 1 -l rus
+tesseract check001.jpeg stdout --oem 1 -l rus
 tesseract check002.jpg stdout --oem 1 -l rus
 ```
