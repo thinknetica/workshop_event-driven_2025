@@ -6,6 +6,9 @@ class RecognizerListener
     recognized_result: Pays::AnalyseService
   }.freeze
   QUEUE_NAME = Settings.sneakers.recognizer_queue
+  ARGUMENTS = {
+    durable: true
+  }
   PG_EXCEPTION = [
     ActiveRecord::ConnectionNotEstablished,
     ActiveRecord::ConnectionTimeoutError,

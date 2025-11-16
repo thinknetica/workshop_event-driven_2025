@@ -6,6 +6,14 @@ class InboxListener
     attachment_registered: Checks::RecognizeService
   }.freeze
   QUEUE_NAME = Settings.sneakers.inbox_queue
+  QUEUE_DEAD_LETTER = Settings.sneakers.inbox_queue + '.error'
+  ARGUMENTS = {
+    durable: true,
+    arguments: {
+      'x-dead-letter-exchange' => QUEUE_DEAD_LETTER,
+      'x-dead-letter-routing-key' => '#'
+    }
+  }
   PG_EXCEPTION = [
     ActiveRecord::ConnectionNotEstablished,
     ActiveRecord::ConnectionTimeoutError,
@@ -15,7 +23,15 @@ class InboxListener
     PG::UnableToSend
   ].freeze
 
-  from_queue Settings.sneakers.inbox_queue
+  from_queue(
+    Settings.sneakers.inbox_queue,
+    queue_options: {
+      arguments: {
+        'x-dead-letter-exchange' => QUEUE_DEAD_LETTER,
+        'x-dead-letter-routing-key' => '#'
+      }
+    }
+  )
 
   attr_reader :parsed_message
 
@@ -23,6 +39,9 @@ class InboxListener
     parse_message(message)
     ActiveRecord::Base.connection_pool.with_connection { process_message }
     ack!
+  rescue Net::ReadTimeout, Errno::ECONNRESET => e
+    logger.info("Listener worker - requeue: #{parsed_message}")
+    requeue!
   rescue *PG_EXCEPTION => e
     reconnect_to_database(e)
   rescue StandardError => e
@@ -33,6 +52,7 @@ class InboxListener
   private
 
   def parse_message(message)
+    # raise Net::ReadTimeout, 'Искусственная ошибка'
     @parsed_message = JSON.parse(message, symbolize_names: true)
     logger.info("Listener worker - message: #{parsed_message}")
   end

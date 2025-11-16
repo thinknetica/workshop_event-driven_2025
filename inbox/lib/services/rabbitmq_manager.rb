@@ -19,7 +19,14 @@ class RabbitmqManager
     @connection = Bunny.new(Settings.rabbitmq.to_hash)
     connection.start
     @channel = connection.create_channel
-    queue = channel.queue(Settings.rabbitmq.outbox_queue, durable: true)
+    dead_letter_queue = Settings.rabbitmq.outbox_queue + '.error'
+    queue = channel.queue(
+      Settings.rabbitmq.outbox_queue,
+      durable: true,
+      arguments: {
+        'x-dead-letter-exchange' => dead_letter_queue,
+        'x-dead-letter-routing-key' => '#'
+      })
     exchange = channel.exchange(
       Settings.rabbitmq.exchange,
       type: Settings.rabbitmq.exchange_type,
