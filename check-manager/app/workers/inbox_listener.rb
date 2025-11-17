@@ -11,7 +11,7 @@ class InboxListener
     durable: true,
     arguments: {
       'x-dead-letter-exchange' => QUEUE_DEAD_LETTER,
-      'x-dead-letter-routing-key' => '#'
+      'x-dead-letter-routing-key' => QUEUE_DEAD_LETTER
     }
   }
   PG_EXCEPTION = [
@@ -28,7 +28,7 @@ class InboxListener
     queue_options: {
       arguments: {
         'x-dead-letter-exchange' => QUEUE_DEAD_LETTER,
-        'x-dead-letter-routing-key' => '#'
+        'x-dead-letter-routing-key' => QUEUE_DEAD_LETTER
       }
     }
   )

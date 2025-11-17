@@ -24,7 +24,7 @@ class RabbitBindQueues
           worker_class::QUEUE_DEAD_LETTER,
           durable: true
         )
-        dead.bind(exchange, routing_key: '#')
+        dead.bind(exchange, routing_key: worker_class::QUEUE_DEAD_LETTER)
       end
 
       queue = channel.queue(
