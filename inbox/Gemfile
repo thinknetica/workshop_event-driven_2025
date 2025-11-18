@@ -15,6 +15,7 @@ gem 'dotenv', require: 'dotenv/load'
 
 # Работа с почтой
 gem 'mail'
+gem 'net-imap'
 
 # Работа с переодическими фоновыми задачами
 gem 'solid_queue'
