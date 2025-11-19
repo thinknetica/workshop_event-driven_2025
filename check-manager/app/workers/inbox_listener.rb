@@ -3,7 +3,7 @@ class InboxListener
   include RabbitMessages::Logging
 
   ACTION_HANDLERS = {
-    attachment_registered: Checks::RecognizeService
+    attachment_registered: [Checks::CreateService, Checks::TesseractService, Checks::RecognizeService]
   }.freeze
   QUEUE_NAME = Settings.sneakers.inbox_queue
   PG_EXCEPTION = [
@@ -42,10 +42,10 @@ class InboxListener
       parsed_message,
       RabbitMessage::INCOME_MESSAGE,
       action)
-    handler = ACTION_HANDLERS[action&.to_sym]
-    raise Error, "Action #{action} is not supported" unless handler
+    handlers = ACTION_HANDLERS[action&.to_sym]
+    raise Error, "Action #{action} is not supported" unless handlers
 
-    handler.call(parsed_message)
+    handlers.each { |handler| handler.call(message) }
 
     rabbit_message.update!(success: true)
   end

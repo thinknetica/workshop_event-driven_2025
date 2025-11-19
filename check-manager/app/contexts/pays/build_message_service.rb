@@ -4,6 +4,7 @@ class Pays::BuildMessageService
 
   option :message
   option :routing_key
+  option :check_messages
 
   def call
     {
@@ -13,7 +14,7 @@ class Pays::BuildMessageService
         full_path: message.dig(:payload, :full_path),
         attachment_id: message.dig(:payload, :attachment_id),
         created_at: message.dig(:payload, :created_at),
-        message: message.dig(:payload, :message)
+        message: check_messages
       },
       created_at: Time.now.utc.to_i,
       routing_key: routing_key
