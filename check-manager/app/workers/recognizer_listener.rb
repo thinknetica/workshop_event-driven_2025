@@ -3,7 +3,7 @@ class RecognizerListener
   include RabbitMessages::Logging
 
   ACTION_HANDLERS = {
-    recognized_result: Pays::AnalyseService
+    recognized_result: [Pays::SaveMessageService, Pays::AnalyseService]
   }.freeze
   QUEUE_NAME = Settings.sneakers.recognizer_queue
   ARGUMENTS = {
